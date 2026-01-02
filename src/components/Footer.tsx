@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 
 const footerLinks = {
   layanan: [
-    { name: "Body Care", href: "https://bodycare.hibiscusefsya.com" },
-    { name: "Travel", href: "#", comingSoon: true },
-    { name: "Fashion", href: "#", comingSoon: true },
-    { name: "Akuntansi", href: "https://akuntansi.hibiscusefsya.com" },
+    { name: "Body Care", href: "#services" },
+    { name: "Fashion", href: "#services" },
+    { name: "Travel", href: "#services" },
+    { name: "Technology", href: "#services" },
   ],
   perusahaan: [
     { name: "Tentang Kami", href: "#about" },
@@ -48,7 +48,7 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-muted-foreground mb-2 max-w-sm">
-              Bagian dari M.B.K Indonesia. Membuka peluang kemitraan franchise untuk kesuksesan bersama.
+              Korporasi bisnis yang membuka peluang kemitraan di bidang Body Care, Fashion, Travel, dan Technology.
             </p>
             <p className="text-muted-foreground mb-6">
               Email: <a href="mailto:admin@hibiscusefsya.com" className="text-primary hover:underline">admin@hibiscusefsya.com</a>
@@ -125,7 +125,7 @@ export const Footer = () => {
             © {currentYear} Hibiscus Efsya. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
-            Part of <span className="text-primary font-medium">M.B.K Indonesia</span>
+            Made with ❤️ in Indonesia
           </p>
         </div>
       </div>

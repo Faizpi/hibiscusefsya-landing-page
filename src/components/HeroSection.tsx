@@ -1,9 +1,61 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FloatingElement from "./FloatingElement";
 import Plasma from "./Plasma";
 import heroImage from "@/assets/hero-hibiscus.jpg";
+import { getHeroContent, HeroContent } from "@/lib/api";
+
+// Default content jika API gagal
+const defaultContent: HeroContent = {
+  badge_text: "🌺 Peluang Kemitraan & Franchise",
+  title: "Raih Kesuksesan Bersama Kami",
+  subtitle: "Bisnis Terpercaya",
+  description: "Hibiscus Efsya membuka kesempatan kemitraan franchise untuk Anda yang ingin memulai bisnis dengan sistem yang sudah teruji dan dukungan penuh dari tim profesional kami.",
+  primary_button_text: "Daftar Franchise",
+  primary_button_link: "#contact",
+  secondary_button_text: "Pelajari Lebih Lanjut",
+  secondary_button_link: "#services",
+  background_image: "",
+  stats: [
+    { value: "4+", label: "Unit Bisnis" },
+    { value: "50+", label: "Mitra Aktif" },
+    { value: "5+", label: "Tahun Pengalaman" },
+  ],
+};
 
 export const HeroSection = () => {
+  const [content, setContent] = useState<HeroContent>(defaultContent);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      const data = await getHeroContent();
+      if (data) {
+        // Parse stats - handle double escaping
+        let stats = defaultContent.stats;
+        if (data.stats) {
+          try {
+            let statsData = data.stats;
+            // Handle double-escaped JSON
+            while (typeof statsData === 'string') {
+              statsData = JSON.parse(statsData);
+            }
+            stats = Array.isArray(statsData) ? statsData : defaultContent.stats;
+          } catch (e) {
+            console.warn('Failed to parse stats:', e);
+            stats = defaultContent.stats;
+          }
+        }
+        
+        const parsedData = {
+          ...data,
+          stats,
+        };
+        setContent(parsedData);
+      }
+    };
+    fetchContent();
+  }, []);
+
   return (
     <section
       id="hero"
@@ -50,7 +102,7 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <span className="text-sm text-muted-foreground">🌺 Peluang Kemitraan & Franchise</span>
+              <span className="text-sm text-muted-foreground">{content.badge_text}</span>
             </motion.div>
 
             <motion.h1
@@ -59,8 +111,8 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              Raih Kesuksesan{" "}
-              <span className="gradient-text">Bersama Kami</span>
+              {content.title.split(' ').slice(0, -2).join(' ')}{" "}
+              <span className="gradient-text">{content.title.split(' ').slice(-2).join(' ')}</span>
             </motion.h1>
 
             <motion.p
@@ -69,7 +121,7 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              Hibiscus Efsya membuka kesempatan kemitraan franchise untuk Anda yang ingin memulai bisnis dengan sistem yang sudah teruji dan dukungan penuh dari tim profesional kami.
+              {content.description}
             </motion.p>
 
             <motion.div
@@ -78,20 +130,22 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.8 }}
             >
-              <motion.button
+              <motion.a
+                href={content.primary_button_link}
                 className="btn-primary-glow text-primary-foreground"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Daftar Franchise
-              </motion.button>
-              <motion.button
+                {content.primary_button_text}
+              </motion.a>
+              <motion.a
+                href={content.secondary_button_link}
                 className="btn-glass text-foreground"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Pelajari Lebih Lanjut
-              </motion.button>
+                {content.secondary_button_text}
+              </motion.a>
             </motion.div>
 
             {/* Stats */}
@@ -101,11 +155,7 @@ export const HeroSection = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
             >
-              {[
-                { value: "4+", label: "Unit Bisnis" },
-                { value: "50+", label: "Mitra Aktif" },
-                { value: "5+", label: "Tahun Pengalaman" },
-              ].map((stat, index) => (
+              {content.stats.map((stat, index) => (
                 <div key={index} className="text-center lg:text-left">
                   <div className="text-2xl md:text-3xl font-bold gradient-text">{stat.value}</div>
                   <div className="text-xs md:text-sm text-muted-foreground">{stat.label}</div>

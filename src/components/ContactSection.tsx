@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getContactContent, ContactContent, submitContactForm } from "@/lib/api";
 
-const contactInfo = [
+// Default content
+const defaultContactInfo = [
   {
     icon: Mail,
     title: "Email",
@@ -25,8 +27,26 @@ const contactInfo = [
   },
 ];
 
+const defaultContent: ContactContent = {
+  section_title: "Hubungi Kami",
+  section_subtitle: "Tertarik Bermitra?",
+  heading: "Tertarik Bermitra?",
+  description: "Ceritakan minat Anda untuk bermitra dengan kami dan tim kami akan segera menghubungi untuk memberikan informasi lengkap tentang peluang franchise.",
+  contact_info: {
+    email: "admin@hibiscusefsya.com",
+    phone: "+62 812 3456 7890",
+    address: "Jakarta, Indonesia",
+  },
+  social_links: {
+    whatsapp: "https://wa.me/6281234567890",
+  },
+  map_embed: "",
+};
+
 export const ContactSection = () => {
   const { toast } = useToast();
+  const [content, setContent] = useState<ContactContent>(defaultContent);
+  const [contactInfo, setContactInfo] = useState(defaultContactInfo);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -34,6 +54,48 @@ export const ContactSection = () => {
     subject: "",
     message: "",
   });
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      const data = await getContactContent();
+      if (data) {
+        // Parse JSON strings jika perlu
+        const parsedContactInfo = typeof data.contact_info === 'string' ? JSON.parse(data.contact_info) : data.contact_info;
+        const parsedSocialLinks = typeof data.social_links === 'string' ? JSON.parse(data.social_links) : data.social_links;
+        
+        setContent({
+          ...data,
+          contact_info: parsedContactInfo || defaultContent.contact_info,
+          social_links: parsedSocialLinks || defaultContent.social_links,
+        });
+        
+        // Update contact info display
+        if (parsedContactInfo) {
+          setContactInfo([
+            {
+              icon: Mail,
+              title: "Email",
+              value: parsedContactInfo.email || defaultContactInfo[0].value,
+              href: `mailto:${parsedContactInfo.email || defaultContactInfo[0].value}`,
+            },
+            {
+              icon: Phone,
+              title: "Telepon",
+              value: parsedContactInfo.phone || defaultContactInfo[1].value,
+              href: `tel:${(parsedContactInfo.phone || defaultContactInfo[1].value).replace(/\s/g, '')}`,
+            },
+            {
+              icon: MapPin,
+              title: "Alamat",
+              value: parsedContactInfo.address || defaultContactInfo[2].value,
+              href: "#",
+            },
+          ]);
+        }
+      }
+    };
+    fetchContent();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
@@ -56,20 +118,27 @@ export const ContactSection = () => {
 
     setIsLoading(true);
     
-    // Simulate email sending - in production, this would call an edge function
     try {
-      // Create mailto link as fallback
-      const mailtoLink = `mailto:admin@hibiscusefsya.com?subject=${encodeURIComponent(formData.subject || 'Pesan dari Website')}&body=${encodeURIComponent(`Nama: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)}`;
+      // Coba submit ke API dulu
+      const result = await submitContactForm(formData);
       
-      // Open email client
-      window.location.href = mailtoLink;
-      
-      toast({
-        title: "Berhasil!",
-        description: "Email client telah dibuka. Silakan kirim pesan Anda.",
-      });
-      
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      if (result.success) {
+        toast({
+          title: "Berhasil!",
+          description: "Pesan Anda telah terkirim. Tim kami akan menghubungi Anda segera.",
+        });
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        // Fallback ke mailto jika API gagal
+        const mailtoLink = `mailto:${content.contact_info.email}?subject=${encodeURIComponent(formData.subject || 'Pesan dari Website')}&body=${encodeURIComponent(`Nama: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)}`;
+        window.location.href = mailtoLink;
+        
+        toast({
+          title: "Info",
+          description: "Email client telah dibuka. Silakan kirim pesan Anda.",
+        });
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -91,13 +160,12 @@ export const ContactSection = () => {
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <ScrollReveal className="text-center mb-12 md:mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">Hubungi Kami</span>
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">{content.section_title}</span>
           <h2 className="text-2xl md:text-5xl font-bold mt-3 mb-6 text-foreground">
-            Tertarik <span className="gradient-text">Bermitra?</span>
+            {content.heading.split(' ').slice(0, -1).join(' ')} <span className="gradient-text">{content.heading.split(' ').slice(-1)}</span>
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
-            Ceritakan minat Anda untuk bermitra dengan kami dan tim kami akan segera menghubungi 
-            untuk memberikan informasi lengkap tentang peluang franchise.
+            {content.description}
           </p>
         </ScrollReveal>
 
@@ -214,7 +282,7 @@ export const ContactSection = () => {
                   Butuh respons cepat? Chat langsung dengan tim kami melalui WhatsApp.
                 </p>
                 <motion.a
-                  href="https://wa.me/6281234567890"
+                  href={content.social_links.whatsapp || "https://wa.me/6281234567890"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-glass text-foreground w-full flex items-center justify-center gap-2"
