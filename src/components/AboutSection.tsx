@@ -3,6 +3,7 @@ import ScrollReveal from "./ScrollReveal";
 import FloatingElement from "./FloatingElement";
 import { motion } from "framer-motion";
 import { getAboutContent, AboutContent } from "@/lib/api";
+import logoHE from "@/assets/logoHE.png";
 
 // Default content jika API gagal
 const defaultFeatures = [
@@ -64,13 +65,13 @@ export const AboutSection = () => {
         // Parse features dan stats jika string
         const parsedFeatures = typeof data.features === 'string' ? JSON.parse(data.features) : data.features;
         const parsedStats = typeof data.stats === 'string' ? JSON.parse(data.stats) : data.stats;
-        
+
         setContent({
           ...data,
           features: parsedFeatures || defaultFeatures,
           stats: parsedStats || defaultContent.stats,
         });
-        
+
         if (parsedFeatures && parsedFeatures.length > 0) {
           setFeatures(parsedFeatures.map((f: { icon: string; title: string; description: string }) => ({
             ...f,
@@ -140,16 +141,15 @@ export const AboutSection = () => {
                   {/* Decorative circles */}
                   <div className="absolute -inset-8 border-2 border-primary/10 rounded-full animate-spin-slow" />
                   <div className="absolute -inset-16 border border-foreground/5 rounded-full animate-spin-slow" style={{ animationDirection: "reverse", animationDuration: "30s" }} />
-                  
+
                   {/* Main glass card */}
                   <div className="glass-card-red p-8 relative z-10">
                     <div className="text-center">
-                      <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-primary">
-                        <span className="text-5xl">🌺</span>
+                      <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-white flex items-center justify-center shadow-lg">
+                        <img src={logoHE} alt="Hibiscus Efsya Logo" className="w-full h-full object-contain p-2" />
                       </div>
-                      <h3 className="text-2xl font-bold mb-2 gradient-text">Hibiscus Efsya</h3>
                       <p className="text-muted-foreground">Korporasi Bisnis Indonesia</p>
-                      
+
                       <div className="mt-6 pt-6 border-t border-border">
                         <div className="grid grid-cols-3 gap-4 text-center">
                           {content.stats.slice(0, 3).map((stat, index) => (

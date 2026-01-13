@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
-import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getContactContent, ContactContent, submitContactForm } from "@/lib/api";
 
@@ -282,14 +282,15 @@ export const ContactSection = () => {
                   Butuh respons cepat? Chat langsung dengan tim kami melalui WhatsApp.
                 </p>
                 <motion.a
-                  href={content.social_links.whatsapp || "https://wa.me/6281234567890"}
+                  href={content.social_links.whatsapp || "https://wa.me/6289608667949"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-glass text-foreground w-full flex items-center justify-center gap-2"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  💬 Chat via WhatsApp
+                  <MessageCircle className="w-5 h-5" />
+                  Chat via WhatsApp
                 </motion.a>
               </div>
             </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import FloatingElement from "./FloatingElement";
 import Plasma from "./Plasma";
-import heroImage from "@/assets/hero-hibiscus.jpg";
+import defaultHeroImage from "@/assets/hero-hibiscus.jpg";
 import { getHeroContent, HeroContent } from "@/lib/api";
 
 // Default content jika API gagal
@@ -25,6 +25,7 @@ const defaultContent: HeroContent = {
 
 export const HeroSection = () => {
   const [content, setContent] = useState<HeroContent>(defaultContent);
+  const [heroImage, setHeroImage] = useState<string>(defaultHeroImage);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -51,6 +52,11 @@ export const HeroSection = () => {
           stats,
         };
         setContent(parsedData);
+        
+        // Set hero image from API or use default
+        if (data.background_image && data.background_image.trim() !== '') {
+          setHeroImage(data.background_image);
+        }
       }
     };
     fetchContent();
