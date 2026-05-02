@@ -60,14 +60,25 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## How can I deploy this project to the server?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+If you want to update the website on the server with `git pull`, the target folder must already be a Git repository. The error `fatal: not a git repository` means the server folder is still plain files, not a repo yet.
 
-## Can I connect a custom domain to my Lovable project?
+### First time setup on the server
 
-Yes, you can!
+```sh
+cd /home/u983003565/domains/hibiscusefsya.com/public_html
+git init
+git remote add origin https://github.com/Faizpi/hibiscusefsya-landing-page.git
+git fetch origin
+git checkout -t origin/main
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### After that, update the site
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```sh
+cd /home/u983003565/domains/hibiscusefsya.com/public_html
+git pull origin main
+```
+
+If `public_html` already contains old website files, back them up first before running the first-time setup.
