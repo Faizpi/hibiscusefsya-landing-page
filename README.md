@@ -66,6 +66,8 @@ If you want to update the website on the server with `git pull`, the target fold
 
 ### First time setup on the server
 
+If `public_html` already contains old website files, back them up or move them aside first so Git does not refuse the checkout.
+
 ```sh
 cd /home/u983003565/domains/hibiscusefsya.com/public_html
 git init
