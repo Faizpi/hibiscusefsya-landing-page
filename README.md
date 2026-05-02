@@ -66,7 +66,13 @@ If you want to update the website on the server with `git pull`, the target fold
 
 ### First time setup on the server
 
-If `public_html` already contains old website files, back them up or move them aside first so Git does not refuse the checkout.
+If `public_html` already contains old website files, move them aside first so Git does not refuse the checkout.
+
+```sh
+cd /home/u983003565/domains/hibiscusefsya.com/public_html
+mkdir -p backup-before-git
+mv index.html public/placeholder.svg public/robots.txt backup-before-git/
+```
 
 ```sh
 cd /home/u983003565/domains/hibiscusefsya.com/public_html
@@ -82,5 +88,3 @@ git checkout -t origin/main
 cd /home/u983003565/domains/hibiscusefsya.com/public_html
 git pull origin main
 ```
-
-If `public_html` already contains old website files, back them up first before running the first-time setup.
